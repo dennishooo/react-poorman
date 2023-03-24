@@ -12,3 +12,5 @@ steps:
 
 1. create React
 2. createElement
+3. render
+4. suspend rendering in concurrent mode

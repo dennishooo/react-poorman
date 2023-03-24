@@ -1,7 +1,15 @@
 let React = {
   createElement: (tag, props, ...children) => {
     if (typeof tag === "function") {
-      return tag(props);
+      try {
+        return tag(props);
+      } catch ({ promise, key }) {
+        promise.then((data) => {
+          promiseCache.set(key, data);
+          reRender();
+        });
+        return { tag: "h1", props: { children: "I AM LOADING" } };
+      }
     }
     let element = { tag, props: { ...props, children } };
     // console.log(element);
@@ -46,9 +54,25 @@ function useState(initialState: any): [any, any] {
   return [state[FROZENCURSOR], setState];
 }
 
+const promiseCache = new Map();
+const createResource = (thingThatReturnSth, key) => {
+  if (promiseCache.get(key)) {
+    return promiseCache.get(key);
+  }
+
+  throw { promise: thingThatReturnSth(), key };
+};
+
 const App = () => {
   const [person, setPerson] = useState("dennis");
   const [count, setCount] = useState(0);
+  const dogPhotoUrl = createResource(
+    () =>
+      fetch("https://dog.ceo/api/breeds/image/random")
+        .then((res) => res.json())
+        .then((payload) => payload.message),
+    "DOG"
+  );
 
   let onNameChange = (name) => {
     reRender();
@@ -73,6 +97,8 @@ const App = () => {
           onNameChange(e.target.value);
         }}
       />
+      {/* <div>{JSON.stringify(dogPhotoUrl)}</div> */}
+      <img src={dogPhotoUrl} alt="doggie" />
       <p>
         Lorem ipsum dolor sit amet consectetur, adipisicing elit. Necessitatibus
         modi, sit cumque accusantium nemo debitis molestias ipsum voluptate
