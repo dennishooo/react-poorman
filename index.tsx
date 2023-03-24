@@ -29,17 +29,21 @@ function render(reactElememt: any, container: HTMLElement) {
 }
 
 const state = [];
+let stateCursor = 0;
 
 function useState(initialState: any): [any, any] {
-  let state = initialState;
+  const FROZENCURSOR = stateCursor;
+  state[FROZENCURSOR] = state[FROZENCURSOR] || initialState;
   console.log({ initialState });
 
   let setState = (newState: any) => {
-    state = newState;
+    state[FROZENCURSOR] = newState;
+    reRender();
     console.log({ newState });
     console.log({ state });
   };
-  return [state, setState];
+  stateCursor++;
+  return [state[FROZENCURSOR], setState];
 }
 
 const App = () => {
@@ -57,6 +61,8 @@ const App = () => {
     <div className="container" id="container">
       <h1 className="title">wtf {person}</h1>
       <h3 className="title">the count is: {count}</h3>
+      <button onclick={() => setCount(count + 1)}>+</button>
+      <button onclick={() => setCount(count - 1)}>-</button>
 
       <input
         type="text"
@@ -79,6 +85,7 @@ const App = () => {
 render(<App />, document.querySelector("#app"));
 
 const reRender = () => {
+  stateCursor = 0;
   document.querySelector("#app").innerHTML = "";
   render(<App />, document.querySelector("#app"));
 };
