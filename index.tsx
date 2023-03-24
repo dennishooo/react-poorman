@@ -1,12 +1,15 @@
 let React = {
   createElement: (tag, props, ...children) => {
+    if (typeof tag === "function") {
+      return tag(props);
+    }
     let element = { tag, props: { ...props, children } };
     console.log(element);
     return element;
   },
 };
 
-const a = (
+const App = () => (
   <div className="container" id="container">
     <h1 className="title">wtf</h1>
     <p>
@@ -17,3 +20,5 @@ const a = (
     </p>
   </div>
 );
+
+<App />;
