@@ -1,8 +1,14 @@
 let React = {
-  createElement: (...args) => {
+  createElement: (tag, props, children) => {
     console.log("hiiii");
-    console.log(args);
+    console.log({ tag });
+    console.log({ props });
+    console.log({ children });
   },
 };
 
-const a = <div>hello</div>;
+const a = (
+  <div className="container" id="container">
+    <div className="title">wtf</div>
+  </div>
+);
